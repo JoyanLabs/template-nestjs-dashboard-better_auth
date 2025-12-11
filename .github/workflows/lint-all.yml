@@ -1,0 +1,46 @@
+name: '🔍 Lint All'
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛬
+        uses: actions/checkout@v5
+
+      - name: Lint Dockerfile 🐳
+        uses: hadolint/hadolint-action@v3.3.0
+        with:
+          dockerfile: Dockerfile
+
+      - name: Lint dotenv 📄
+        run: |
+          curl -sSfL https://git.io/JLbXn | sh -s -- -b usr/local/bin v3.3.0
+          usr/local/bin/dotenv-linter
+
+      - name: Lint YAML 📋
+        run: |
+          pip install yamllint
+          yamllint .
+
+      - name: Lint GitHub Actions 🔧
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) 1.6.26
+          ./actionlint -color
+
+      - name: Lint PR Title 📝
+        if: github.event_name == 'pull_request'
+        uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          ignoreLabels: |
+            bot
+            autorelease: pending

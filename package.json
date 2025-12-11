@@ -1,0 +1,93 @@
+{
+	"name": "template-labs-nest-fastify-biome-service",
+	"version": "1.0.0",
+	"description": "Generic NestJS template with Fastify, Biome, and Docker",
+	"author": "JoyanLabs",
+	"license": "MIT",
+	"type": "module",
+	"bugs": {
+		"url": "https://github.com/JoyanLabs/template-labs-nest-fastify-biome-service/issues"
+	},
+	"homepage": "https://github.com/JoyanLabs/template-labs-nest-fastify-biome-service#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/JoyanLabs/template-labs-nest-fastify-biome-service.git"
+	},
+	"keywords": [
+		"typescript",
+		"nestjs",
+		"fastify",
+		"biome",
+		"docker",
+		"template"
+	],
+	"engines": {
+		"node": ">=22.x",
+		"pnpm": ">=10.19.0"
+	},
+	"packageManager": "pnpm@10.19.0",
+	"main": "dist/main.js",
+	"scripts": {
+		"build": "node --run build:clean && nest build --path tsconfig.prod.json",
+		"start": "node dist/main.js",
+		"dev": "nest start --watch --debug=0.0.0.0:9229",
+		"test": "rimraf coverage .nyc_output && concurrently 'node --run test:unit' 'node --run test:e2e' && node --run calculate-global-test-coverage",
+		"test:unit": "vitest run --coverage --config vitest.config.unit.ts",
+		"test:e2e": "vitest run --coverage --config ./vitest.config.e2e.ts",
+		"test:performance": "k6 run tests/performance/contexts/users/get-users.mjs",
+		"calculate-global-test-coverage": "tsx scripts/calculate-global-test-coverage.ts",
+		"prepare": "[ -f .husky/install.mjs ] && node .husky/install.mjs || true",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"lint:file": "biome check",
+		"lint:yaml": "chmod +x scripts/lint_yaml.sh && ./scripts/lint_yaml.sh",
+		"build:clean": "rimraf dist; exit 0",
+		"typos": "chmod +x scripts/check_typos.sh && ./scripts/check_typos.sh"
+	},
+	"dependencies": {
+		"@nestjs/cli": "^11.0.10",
+		"@nestjs/common": "^11.1.7",
+		"@nestjs/config": "^4.0.2",
+		"@nestjs/core": "^11.1.7",
+		"@nestjs/platform-fastify": "^11.1.7",
+		"reflect-metadata": "^0.2.2",
+		"rxjs": "^7.8.2"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.1",
+		"@commitlint/cli": "20.1.0",
+		"@commitlint/config-conventional": "20.0.0",
+		"@commitlint/types": "20.0.0",
+		"@nestjs/schematics": "11.0.9",
+		"@nestjs/testing": "11.1.7",
+		"@swc/cli": "0.7.8",
+		"@swc/core": "1.13.21",
+		"@types/fs-extra": "^11.0.4",
+		"@types/node": "^24.9.1",
+		"@types/supertest": "^6.0.3",
+		"@vitest/coverage-v8": "^4.0.3",
+		"concurrently": "^9.2.1",
+		"fs-extra": "^11.3.2",
+		"husky": "^9.1.6",
+		"lint-staged": "^16.2.6",
+		"nock": "^14.0.10",
+		"nyc": "^17.1.0",
+		"rimraf": "^6.0.1",
+		"source-map-support": "^0.5.21",
+		"supertest": "^7.1.4",
+		"ts-loader": "^9.5.4",
+		"ts-node": "^10.9.2",
+		"tsx": "^4.20.6",
+		"typescript": "^5.9.3",
+		"unplugin-swc": "^1.5.8",
+		"vite": "^7.1.12",
+		"vitest": "^4.0.3",
+		"vitest-mock-extended": "^3.1.0"
+	},
+	"optionalDependencies": {
+		"@rollup/rollup-linux-x64-gnu": "^4.52.5",
+		"@swc/core-linux-arm64-musl": "^1.13.21",
+		"@swc/core-linux-x64-gnu": "^1.13.21",
+		"@swc/core-linux-x64-musl": "^1.13.21"
+	}
+}
