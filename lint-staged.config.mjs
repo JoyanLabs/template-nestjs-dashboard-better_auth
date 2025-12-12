@@ -4,7 +4,6 @@ const config = {
 		'biome check --write',
 		'vitest related --run',
 	],
-	'*': 'pnpm run typos',
 	'*.{yml,yaml}': 'pnpm run lint:yaml',
 };
 
