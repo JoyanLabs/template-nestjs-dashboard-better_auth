@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import {
 	FastifyAdapter,
 	type NestFastifyApplication,
@@ -6,22 +7,24 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import * as nock from 'nock';
 import request from 'supertest';
 
-import { AppModule } from '@/app/app.module.js';
-import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service.js';
+import { HealthController } from '@/app/health/api/health.controller.js';
 import { createMock } from '@/tests/utils/mock.js';
 
 describe('Health', () => {
 	let app: NestFastifyApplication;
 
 	beforeAll(async () => {
-		const mockPrismaService = createMock<PrismaService>();
+		const mockLogger = createMock<Logger>();
 
 		const moduleFixture: TestingModule = await Test.createTestingModule({
-			imports: [AppModule],
-		})
-			.overrideProvider(PrismaService)
-			.useValue(mockPrismaService)
-			.compile();
+			controllers: [HealthController],
+			providers: [
+				{
+					provide: Logger,
+					useValue: mockLogger,
+				},
+			],
+		}).compile();
 
 		app = moduleFixture.createNestApplication<NestFastifyApplication>(
 			new FastifyAdapter(),
