@@ -7,14 +7,21 @@ import * as nock from 'nock';
 import request from 'supertest';
 
 import { AppModule } from '@/app/app.module.js';
+import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service.js';
+import { createMock } from '@/tests/utils/mock.js';
 
 describe('Health', () => {
 	let app: NestFastifyApplication;
 
 	beforeAll(async () => {
+		const mockPrismaService = createMock<PrismaService>();
+
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [AppModule],
-		}).compile();
+		})
+			.overrideProvider(PrismaService)
+			.useValue(mockPrismaService)
+			.compile();
 
 		app = moduleFixture.createNestApplication<NestFastifyApplication>(
 			new FastifyAdapter(),
