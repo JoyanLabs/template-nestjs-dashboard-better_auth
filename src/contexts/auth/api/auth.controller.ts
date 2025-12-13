@@ -13,13 +13,13 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import type { GetCurrentUserUseCase } from '../application/use-cases/get-current-user/get-current-user.use-case.js';
+import { GetCurrentUserUseCase } from '../application/use-cases/get-current-user/get-current-user.use-case.js';
 import type { SignInDto } from '../application/use-cases/sign-in/sign-in.dto.js';
-import type { SignInUseCase } from '../application/use-cases/sign-in/sign-in.use-case.js';
+import { SignInUseCase } from '../application/use-cases/sign-in/sign-in.use-case.js';
 import type { SignUpDto } from '../application/use-cases/sign-up/sign-up.dto.js';
-import type { SignUpUseCase } from '../application/use-cases/sign-up/sign-up.use-case.js';
+import { SignUpUseCase } from '../application/use-cases/sign-up/sign-up.use-case.js';
 import type { UserEntity } from '../domain/entities/user.entity.js';
-import type { BetterAuthAdapter } from '../infrastructure/adapters/better-auth.adapter.js';
+import { BetterAuthAdapter } from '../infrastructure/adapters/better-auth.adapter.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
 import { BetterAuthGuard } from './guards/better-auth.guard.js';
 

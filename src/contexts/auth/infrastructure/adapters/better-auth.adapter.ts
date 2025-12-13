@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import type { SessionEntity } from '@/contexts/auth/domain/entities/session.entity.js';
@@ -7,7 +7,7 @@ import type { UserEntity } from '@/contexts/auth/domain/entities/user.entity.js'
 import type { IAuthProvider } from '@/contexts/auth/domain/repositories/auth-provider.interface.js';
 import { NotFoundException } from '@/shared/exceptions/not-found.exception.js';
 import { ValidationException } from '@/shared/exceptions/validation.exception.js';
-import type { PrismaService } from '@/shared/infrastructure/prisma/prisma.service.js';
+import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service.js';
 import { SessionMapper } from '../persistence/mappers/session.mapper.js';
 import { UserMapper } from '../persistence/mappers/user.mapper.js';
 
