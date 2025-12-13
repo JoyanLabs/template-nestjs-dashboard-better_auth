@@ -36,7 +36,6 @@
 		"test:e2e": "vitest run --coverage --config ./vitest.config.e2e.ts",
 		"test:performance": "k6 run tests/performance/contexts/users/get-users.mjs",
 		"calculate-global-test-coverage": "tsx scripts/calculate-global-test-coverage.ts",
-		"postinstall": "prisma generate",
 		"prepare": "[ -f .husky/install.mjs ] && node .husky/install.mjs || true",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
