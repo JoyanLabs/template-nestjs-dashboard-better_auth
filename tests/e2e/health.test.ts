@@ -6,7 +6,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import * as nock from 'nock';
 import request from 'supertest';
 
-import { AppModule } from '@/app/app.module';
+import { AppModule } from '@/app/app.module.js';
 
 describe('Health', () => {
 	let app: NestFastifyApplication;

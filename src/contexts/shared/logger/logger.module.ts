@@ -1,5 +1,10 @@
-import { Global, Logger, Module, type Provider } from '@nestjs/common';
-import type { LogLevel } from '@nestjs/common/services/logger.service';
+import {
+	Global,
+	Logger,
+	type LogLevel,
+	Module,
+	type Provider,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 const loggerProvider: Provider = {

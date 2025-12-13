@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
-import { createVitestTestConfig } from './create-vitest-test-config';
+import { createVitestTestConfig } from './create-vitest-test-config.js';
 
 export default defineConfig({
 	test: {

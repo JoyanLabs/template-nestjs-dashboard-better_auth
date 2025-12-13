@@ -1,7 +1,7 @@
 import type { Logger } from '@nestjs/common';
 
-import { HealthController } from '@/app/health/api/health.controller';
-import { createMock, type Mock } from '@/tests/utils/mock';
+import { HealthController } from '@/app/health/api/health.controller.js';
+import { createMock, type Mock } from '@/tests/utils/mock.js';
 
 describe('HealthController', () => {
 	let healthController: HealthController;

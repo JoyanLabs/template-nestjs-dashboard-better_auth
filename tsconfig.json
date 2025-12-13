@@ -2,9 +2,9 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"module": "esnext",
-		"target": "esnext",
-		"moduleResolution": "Bundler",
+		"module": "NodeNext",
+		"target": "ES2022",
+		"moduleResolution": "NodeNext",
 		"esModuleInterop": true,
 		"strict": true,
 		"outDir": "dist",
@@ -19,7 +19,7 @@
 			"@/src/*": ["src/*"],
 			"@/app/*": ["src/app/*"],
 			"@/contexts/*": ["src/contexts/*"],
-			"@/shared/*": ["src/contexts/shared/*"],
+			"@/shared/*": ["src/shared/*"],
 			"@/tests/*": ["tests/*"]
 		},
 		"types": ["vitest/globals"]
