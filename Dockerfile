@@ -19,10 +19,15 @@ COPY package.json pnpm-lock.yaml ./
 #     rm -f .npmrc
 RUN pnpm install --frozen-lockfile
 
+COPY prisma prisma
+COPY prisma.config.ts .
 COPY tsconfig*.json .
 COPY .swcrc .
 COPY nest-cli.json .
 COPY src src
+
+# Generar el cliente de Prisma (solo tipos, no necesita DATABASE_URL)
+RUN npx prisma generate
 
 EXPOSE $PORT
 CMD ["node", "--run", "dev"]
@@ -40,10 +45,15 @@ COPY package.json pnpm-lock.yaml ./
 #     rm -f .npmrc
 RUN pnpm install --frozen-lockfile
 
+COPY prisma prisma
+COPY prisma.config.ts .
 COPY tsconfig*.json .
 COPY .swcrc .
 COPY nest-cli.json .
 COPY src src
+
+# Generar el cliente de Prisma antes del build (solo tipos, no necesita DATABASE_URL)
+RUN npx prisma generate
 
 RUN node --run build && \
     pnpm prune --prod
