@@ -8,8 +8,8 @@ import type { IAuthProvider } from '@/contexts/auth/domain/repositories/auth-pro
 import { NotFoundException } from '@/shared/exceptions/not-found.exception.js';
 import { ValidationException } from '@/shared/exceptions/validation.exception.js';
 import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service.js';
-import { SessionMapper } from '../persistence/mappers/session.mapper.js';
-import { UserMapper } from '../persistence/mappers/user.mapper.js';
+import { toDomain as sessionToDomain } from '../persistence/mappers/session.mapper.js';
+import { toDomain as userToDomain } from '../persistence/mappers/user.mapper.js';
 
 /**
  * Adaptador que encapsula Better Auth
@@ -100,8 +100,8 @@ export class BetterAuthAdapter implements IAuthProvider {
 			}
 
 			return {
-				user: UserMapper.toDomain(user),
-				session: SessionMapper.toDomain(session),
+				user: userToDomain(user),
+				session: sessionToDomain(session),
 			};
 		} catch (error) {
 			if (error instanceof ValidationException) {
@@ -152,8 +152,8 @@ export class BetterAuthAdapter implements IAuthProvider {
 			}
 
 			return {
-				user: UserMapper.toDomain(user),
-				session: SessionMapper.toDomain(session),
+				user: userToDomain(user),
+				session: sessionToDomain(session),
 			};
 		} catch (error) {
 			if (error instanceof ValidationException) {
@@ -184,13 +184,13 @@ export class BetterAuthAdapter implements IAuthProvider {
 			}
 
 			// Verificar que la sesión no haya expirado
-			const sessionEntity = SessionMapper.toDomain(session);
+			const sessionEntity = sessionToDomain(session);
 			if (sessionEntity.isExpired()) {
 				return null;
 			}
 
 			return {
-				user: UserMapper.toDomain(session.user),
+				user: userToDomain(session.user),
 				session: sessionEntity,
 			};
 		} catch {
@@ -226,7 +226,7 @@ export class BetterAuthAdapter implements IAuthProvider {
 			throw new NotFoundException('Session', sessionToken);
 		}
 
-		return SessionMapper.toDomain(session);
+		return sessionToDomain(session);
 	}
 
 	/**
@@ -237,6 +237,6 @@ export class BetterAuthAdapter implements IAuthProvider {
 			where: { id: userId },
 		});
 
-		return user ? UserMapper.toDomain(user) : null;
+		return user ? userToDomain(user) : null;
 	}
 }

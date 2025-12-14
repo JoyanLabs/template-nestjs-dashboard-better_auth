@@ -13,7 +13,6 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { GetCurrentUserUseCase } from '../application/use-cases/get-current-user/get-current-user.use-case.js';
 import type { SignInDto } from '../application/use-cases/sign-in/sign-in.dto.js';
 import { SignInUseCase } from '../application/use-cases/sign-in/sign-in.use-case.js';
 import type { SignUpDto } from '../application/use-cases/sign-up/sign-up.dto.js';
@@ -32,7 +31,6 @@ export class AuthController {
 	constructor(
 		private readonly signInUseCase: SignInUseCase,
 		private readonly signUpUseCase: SignUpUseCase,
-		private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
 		@Inject('IAuthProvider')
 		private readonly authAdapter: BetterAuthAdapter,
 	) {}

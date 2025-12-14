@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import type { SessionEntity } from '@/contexts/auth/domain/entities/session.entity.js';
 import type { ISessionRepository } from '@/contexts/auth/domain/repositories/session.repository.interface.js';
 import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service.js';
-import { SessionMapper } from '../persistence/mappers/session.mapper.js';
+import {
+	toDomain as sessionToDomain,
+	toDomainArray as sessionToDomainArray,
+	toPrismaCreate as sessionToPrismaCreate,
+	toPrismaUpdate as sessionToPrismaUpdate,
+} from '../persistence/mappers/session.mapper.js';
 
 /**
  * Implementación del repositorio de sesiones usando Prisma
@@ -20,7 +25,7 @@ export class SessionRepository implements ISessionRepository {
 			where: { id },
 		});
 
-		return session ? SessionMapper.toDomain(session) : null;
+		return session ? sessionToDomain(session) : null;
 	}
 
 	/**
@@ -31,7 +36,7 @@ export class SessionRepository implements ISessionRepository {
 			where: { token },
 		});
 
-		return session ? SessionMapper.toDomain(session) : null;
+		return session ? sessionToDomain(session) : null;
 	}
 
 	/**
@@ -43,7 +48,7 @@ export class SessionRepository implements ISessionRepository {
 			orderBy: { createdAt: 'desc' },
 		});
 
-		return SessionMapper.toDomainArray(sessions);
+		return sessionToDomainArray(sessions);
 	}
 
 	/**
@@ -71,17 +76,17 @@ export class SessionRepository implements ISessionRepository {
 			// Actualizar sesión existente
 			const updated = await this.prisma.session.update({
 				where: { id: session.id },
-				data: SessionMapper.toPrismaUpdate(session),
+				data: sessionToPrismaUpdate(session),
 			});
-			return SessionMapper.toDomain(updated);
+			return sessionToDomain(updated);
 		}
 
 		// Crear nueva sesión
 		const created = await this.prisma.session.create({
-			data: SessionMapper.toPrismaCreate(session),
+			data: sessionToPrismaCreate(session),
 		});
 
-		return SessionMapper.toDomain(created);
+		return sessionToDomain(created);
 	}
 
 	/**

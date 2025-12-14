@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import type { UserEntity } from '@/contexts/auth/domain/entities/user.entity.js';
 import type { IUserRepository } from '@/contexts/auth/domain/repositories/user.repository.interface.js';
 import { PrismaService } from '@/shared/infrastructure/prisma/prisma.service.js';
-import { UserMapper } from '../persistence/mappers/user.mapper.js';
+import {
+	toDomain as userToDomain,
+	toPrismaCreate as userToPrismaCreate,
+	toPrismaUpdate as userToPrismaUpdate,
+} from '../persistence/mappers/user.mapper.js';
 
 /**
  * Implementación del repositorio de usuarios usando Prisma
@@ -20,7 +24,7 @@ export class UserRepository implements IUserRepository {
 			where: { id },
 		});
 
-		return user ? UserMapper.toDomain(user) : null;
+		return user ? userToDomain(user) : null;
 	}
 
 	/**
@@ -31,7 +35,7 @@ export class UserRepository implements IUserRepository {
 			where: { email: email.toLowerCase() },
 		});
 
-		return user ? UserMapper.toDomain(user) : null;
+		return user ? userToDomain(user) : null;
 	}
 
 	/**
@@ -57,17 +61,17 @@ export class UserRepository implements IUserRepository {
 			// Actualizar usuario existente
 			const updated = await this.prisma.user.update({
 				where: { id: user.id },
-				data: UserMapper.toPrismaUpdate(user),
+				data: userToPrismaUpdate(user),
 			});
-			return UserMapper.toDomain(updated);
+			return userToDomain(updated);
 		}
 
 		// Crear nuevo usuario
 		const created = await this.prisma.user.create({
-			data: UserMapper.toPrismaCreate(user),
+			data: userToPrismaCreate(user),
 		});
 
-		return UserMapper.toDomain(created);
+		return userToDomain(created);
 	}
 
 	/**
@@ -76,10 +80,10 @@ export class UserRepository implements IUserRepository {
 	async update(id: string, user: Partial<UserEntity>): Promise<UserEntity> {
 		const updated = await this.prisma.user.update({
 			where: { id },
-			data: UserMapper.toPrismaUpdate(user),
+			data: userToPrismaUpdate(user),
 		});
 
-		return UserMapper.toDomain(updated);
+		return userToDomain(updated);
 	}
 
 	/**
