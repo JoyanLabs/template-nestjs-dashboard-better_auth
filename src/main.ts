@@ -1,3 +1,4 @@
+/// <reference path="./types/fastify.d.ts" />
 import fastifyCookie from '@fastify/cookie';
 import fastifyCors from '@fastify/cors';
 import { Logger } from '@nestjs/common';
