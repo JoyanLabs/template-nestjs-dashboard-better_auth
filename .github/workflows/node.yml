@@ -21,4 +21,5 @@ jobs:
       - name: Lint code 💅
         run: node --run lint
       - name: Run tests ✅
+        if: ${{ vars.SKIP_TESTS != 'true' }}
         run: node --run test
