@@ -22,9 +22,9 @@ services:
       target: production
       context: .
       args:
-        - PORT=${PORT:-3000}
+        - PORT=${PORT:-3001}
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "${PORT:-3001}:${PORT:-3001}"
     deploy:
       resources:
         limits:
@@ -42,9 +42,9 @@ services:
       target: dev
       context: .
       args:
-        - PORT=${PORT:-3000}
+        - PORT=${PORT:-3001}
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "${PORT:-3001}:${PORT:-3001}"
       - "9229:9229"
     volumes:
       - ./src:/app/src
