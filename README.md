@@ -2,17 +2,17 @@
   <a href="http://nestjs.com/" target="blank"><img src="images/nestjs.png" alt="Nest Logo" width="512" /></a>
 </p>
 
-<h1 align="center">🚀 NestJS Fastify Biome Template | Joyan Labs</h1>
+<h1 align="center">🚀 NestJS Express Biome Template | Joyan Labs</h1>
 
 <p align="center">
-  A high-performance, production-ready NestJS template with Fastify, Biome, and Docker.
+  A high-performance, production-ready NestJS template with Express, Biome, and Docker.
 </p>
 
 <p align="center">
   <a href="https://nodejs.org/docs/latest-v22.x/api/index.html"><img src="https://img.shields.io/badge/node-22.x-green.svg" alt="node"/></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/typescript-5.x-blue.svg" alt="typescript"/></a>
   <a href="https://pnpm.io/"><img src="https://img.shields.io/badge/pnpm-9.x-red.svg" alt="pnpm"/></a>
-  <a href="https://fastify.dev/"><img src="https://img.shields.io/badge/Web_Framework-Fastify_⚡-black.svg" alt="fastify"/></a>
+  <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Web_Framework-Express_⚡-black.svg" alt="express"/></a>
   <a href="https://swc.rs/"><img src="https://img.shields.io/badge/Compiler-SWC_-orange.svg" alt="swc"/></a>
   <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/Test-Vitest_-yellow.svg" alt="swc"/></a>
   <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Dockerized 🐳_-blue.svg" alt="docker"/></a>
@@ -26,7 +26,7 @@ This template provides a solid foundation for building scalable and efficient ba
 
 ### Key Features
 
-- ⚡️ **Fastify**: High-performance web framework (replacing Express).
+- ⚡️ **Express**: Stable and widely supported web framework.
 - 🧹 **Biome**: Fast formatter and linter (replacing Prettier/ESLint).
 - 🐳 **Dockerized**: Ready for development and production.
 - 🧪 **Testing**: Vitest for Unit/E2E tests and k6 for performance testing.
@@ -41,7 +41,7 @@ This template provides a solid foundation for building scalable and efficient ba
 
 1. **🐳 Fully Dockerized**: Optimized Dockerfile for dev and prod.
 2. **👷 SWC Compiler**: ~20x faster than standard TypeScript compiler.
-3. **⚡️ Fastify**: Significantly faster than Express.
+3. **⚡️ Express**: Industry standard for Node.js applications.
 4. **🐶 Husky Integration**:
    - Linting on commit
    - Conventional commits

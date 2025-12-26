@@ -1,25 +1,25 @@
 {
-	"name": "template-labs-nest-fastify-biome-service",
+	"name": "spp-backend",
 	"version": "1.0.0",
 	"type": "module",
-	"description": "Generic NestJS template with Fastify, Biome, and Docker",
+	"description": "SPP Backend - Sistema de Gestión con NestJS, Prisma y Better Auth",
 	"author": "JoyanLabs",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/JoyanLabs/template-labs-nest-fastify-biome-service/issues"
+		"url": "https://github.com/JoyanLabs/spp-backend/issues"
 	},
-	"homepage": "https://github.com/JoyanLabs/template-labs-nest-fastify-biome-service#readme",
+	"homepage": "https://github.com/JoyanLabs/spp-backend#readme",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/JoyanLabs/template-labs-nest-fastify-biome-service.git"
+		"url": "git+https://github.com/JoyanLabs/spp-backend.git"
 	},
 	"keywords": [
 		"typescript",
 		"nestjs",
-		"fastify",
+		"prisma",
 		"biome",
 		"docker",
-		"template"
+		"better-auth"
 	],
 	"engines": {
 		"node": ">=22.x",
@@ -44,24 +44,27 @@
 		"build:clean": "rimraf dist; exit 0"
 	},
 	"dependencies": {
-		"@fastify/cookie": "^11.0.2",
-		"@fastify/cors": "^11.2.0",
 		"@nestjs/cli": "^11.0.10",
 		"@nestjs/common": "^11.1.7",
 		"@nestjs/config": "^4.0.2",
 		"@nestjs/core": "^11.1.7",
-		"@nestjs/platform-fastify": "^11.1.7",
+		"@nestjs/platform-express": "^11.1.10",
+		"@nestjs/swagger": "^11.2.3",
 		"@prisma/adapter-pg": "^7.1.0",
 		"@prisma/client": "^7.1.0",
-		"better-auth": "^1.4.6",
+		"@scalar/nestjs-api-reference": "^1.0.11",
+		"@thallesp/nestjs-better-auth": "^2.2.0",
+		"better-auth": "^1.2.8",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.14.3",
+		"cookie-parser": "^1.4.7",
+		"express": "^5.2.1",
 		"pg": "^8.16.3",
 		"reflect-metadata": "^0.2.2",
-		"rxjs": "^7.8.2"
+		"rxjs": "^7.8.2",
+		"zod": "^4.2.1"
 	},
 	"devDependencies": {
-		"@better-auth/cli": "^1.4.6",
 		"@biomejs/biome": "2.3.8",
 		"@commitlint/cli": "20.1.0",
 		"@commitlint/config-conventional": "20.0.0",
@@ -71,13 +74,14 @@
 		"@swc/cli": "0.7.8",
 		"@swc/core": "1.13.21",
 		"@swc/helpers": "^0.5.17",
+		"@types/cookie-parser": "^1.4.10",
+		"@types/express": "^5.0.3",
 		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^24.9.1",
 		"@types/pg": "^8.16.0",
 		"@types/supertest": "^6.0.3",
 		"@vitest/coverage-v8": "^4.0.3",
 		"concurrently": "^9.2.1",
-		"fastify": "^5.6.2",
 		"fs-extra": "^11.3.2",
 		"husky": "^9.1.6",
 		"lint-staged": "^16.2.6",

@@ -30,7 +30,7 @@ COPY src src
 RUN npx prisma generate
 
 EXPOSE $PORT
-CMD ["node", "--run", "dev"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node --run dev"]
 
 FROM base AS build
 
@@ -68,7 +68,9 @@ COPY --from=build $DIR/package.json .
 COPY --from=build $DIR/pnpm-lock.yaml .
 COPY --from=build $DIR/node_modules node_modules
 COPY --from=build $DIR/dist dist
+COPY --from=build $DIR/prisma prisma
+COPY --from=build $DIR/prisma.config.ts .
 
 USER $USER
 EXPOSE $PORT
-CMD ["dumb-init", "node", "dist/main.js"]
+CMD ["sh", "-c", "dumb-init sh -c 'npx prisma migrate deploy && node dist/main.js'"]
