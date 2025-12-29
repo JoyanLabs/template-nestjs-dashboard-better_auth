@@ -9,7 +9,7 @@ import { validateEnv } from '@/shared/infrastructure/config/env.schema.js';
 // Cargar variables de entorno antes de validar (necesario para ESM top-level imports)
 try {
 	process.loadEnvFile();
-} catch (e) {
+} catch {
 	// Ignorar si el archivo .env no existe
 }
 
@@ -66,11 +66,12 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 	trustedOrigins,
-	// Configuración de sesión - DESHABILITANDO cookieCache temporalmente para probar
+	// Configuración de sesión - Sin Cookie Cache (más confiable para desarrollo)
 	session: {
 		expiresIn: 60 * 60 * 24 * 7, // 7 días
 		updateAge: 60 * 60 * 24, // Actualizar cada día
-		// cookieCache DESHABILITADO para pruebas - puede interferir con session_token
+		// Cookie Cache DESHABILITADO - Causa problemas con cross-domain cookies
+		// Usaremos sessions basadas en base de datos que son más confiables
 		// cookieCache: {
 		// 	enabled: true,
 		// 	maxAge: 60 * 5, // 5 minutos
@@ -80,12 +81,17 @@ export const auth = betterAuth({
 	advanced: {
 		// En desarrollo (HTTP), no usar Secure. En producción (HTTPS), sí.
 		useSecureCookies: isProduction,
-		// Configuración de cookies para desarrollo
+		// Configuración de cookies para desarrollo - permitir cross-origin con localhost
 		defaultCookieAttributes: {
 			sameSite: isProduction ? 'none' : 'lax',
 			secure: isProduction,
 			httpOnly: true,
 			path: '/',
+		},
+		// IMPORTANTE: Para desarrollo con localhost y múltiples puertos
+		crossSubDomainCookies: {
+			enabled: !isProduction, // Solo en desarrollo
+			domain: !isProduction ? 'localhost' : undefined, // Permitir cookies en localhost
 		},
 	},
 });
