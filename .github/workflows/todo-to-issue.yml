@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository != 'JoyanLabs/template-labs-nest_service'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "TODO to Issue"
         uses: "alstr/todo-to-issue-action@v5"
         with:
