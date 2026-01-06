@@ -3,6 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { admin } from 'better-auth/plugins';
 import pg from 'pg';
 import { validateEnv } from '@/shared/infrastructure/config/env.schema.js';
 
@@ -94,6 +95,13 @@ export const auth = betterAuth({
 			domain: !isProduction ? 'localhost' : undefined, // Permitir cookies en localhost
 		},
 	},
+	// Plugin de Admin para gestión de roles
+	plugins: [
+		admin({
+			defaultRole: 'user',
+			adminRoles: ['admin'],
+		}),
+	],
 });
 
 export type Session = typeof auth.$Infer.Session;

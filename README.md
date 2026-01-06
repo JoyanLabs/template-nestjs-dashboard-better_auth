@@ -26,7 +26,8 @@ This template provides a solid foundation for building scalable and efficient ba
 
 ### Key Features
 
-- ⚡️ **Express**: Stable and widely supported web framework.
+- ⚡️ **Express 5**: Modern and fast web framework.
+- 🔐 **Better Auth**: Complete authentication with admin plugin.
 - 🧹 **Biome**: Fast formatter and linter (replacing Prettier/ESLint).
 - 🐳 **Dockerized**: Ready for development and production.
 - 🧪 **Testing**: Vitest for Unit/E2E tests and k6 for performance testing.
@@ -194,6 +195,11 @@ pnpm run lint:fix
 - Dokploy Configuration
 - Environment Variables
 - Deployment Workflows
+
+🔐 **See [docs/ROUTE_PROTECTION.md](docs/ROUTE_PROTECTION.md) for:**
+- Authentication with Better Auth
+- Role-based access control
+- Admin endpoints
 
 ---
 
