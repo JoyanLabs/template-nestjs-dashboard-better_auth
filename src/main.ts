@@ -2,9 +2,11 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
+import { toNodeHandler } from 'better-auth/node';
 import cookieParser from 'cookie-parser';
 
 import { AppModule } from '@/app/app.module.js';
+import { auth } from '@/shared/infrastructure/auth/better-auth.config.js';
 import {
 	type EnvConfig,
 	validateEnv,
@@ -12,7 +14,7 @@ import {
 
 async function bootstrap() {
 	// NestJS usa Express body parser por defecto
-	// BetterAuthMiddleware se ejecuta primero y usa toNodeHandler que maneja su propio body
+	// Better Auth handler montado directamente en Express maneja su propio body
 	const app = await NestFactory.create(AppModule);
 
 	const logger = new Logger('Bootstrap');
@@ -30,6 +32,14 @@ async function bootstrap() {
 	const port = env.PORT;
 	const nodeEnv = env.NODE_ENV;
 	const apiPrefix = env.API_PREFIX;
+
+	// Fix para Express 5: Usar regex en lugar de wildcard
+	// Esto evita el bug de Express 5 con /*path
+	// Ver: https://github.com/better-auth/better-auth/issues/6636
+	const express = app.getHttpAdapter().getInstance();
+	const authHandler = toNodeHandler(auth);
+	express.all(/^\/api\/auth\/.*$/, authHandler);
+	logger.log('✅ Better Auth handler mounted with Express 5 regex fix');
 
 	// Configurar cookie parser
 	app.use(cookieParser(env.JWT_SECRET));

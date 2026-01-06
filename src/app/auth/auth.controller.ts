@@ -11,7 +11,7 @@ import { auth } from '@/shared/infrastructure/auth/better-auth.config.js';
 
 /**
  * Documentación de los endpoints de Better Auth para Swagger/Scalar.
- * Los endpoints reales son manejados por BetterAuthMiddleware.
+ * Los endpoints reales son manejados por el handler en main.ts.
  */
 @ApiTags('Autenticación')
 @Controller('auth')
@@ -40,7 +40,7 @@ export class AuthController {
 	@ApiResponse({ status: 400, description: 'Datos inválidos' })
 	@ApiResponse({ status: 409, description: 'El email ya está registrado' })
 	async signUp(@Req() req: Request, @Res() res: Response) {
-		// Manejado por BetterAuthMiddleware
+		// Manejado por handler en main.ts
 		return this.forwardToAuth(req, res);
 	}
 
