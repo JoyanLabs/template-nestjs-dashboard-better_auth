@@ -15,15 +15,15 @@ jobs:
     steps:
       - uses: actions/first-interaction@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: |
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_message: |
             ¡Hola @${{github.actor}} 👋!
 
             ¡Gracias por abrir tu primer issue aquí! ♥️
             Si estás reportando un bug 🐞, por favor asegúrate de incluir pasos sobre cómo reproducirlo.
 
             Lo revisaremos tan pronto como podamos 💪
-          pr-message: |
+          pr_message: |
             ¡Hola @${{github.actor}} 👋!
 
             ¡Gracias por estar aquí y ayudar a que este proyecto crezca 🚀
