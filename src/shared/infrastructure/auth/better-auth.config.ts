@@ -6,6 +6,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin } from 'better-auth/plugins';
 import pg from 'pg';
 import { validateEnv } from '@/shared/infrastructure/config/env.schema.js';
+import { ac, roles } from './permissions.js';
 
 // Cargar variables de entorno antes de validar (necesario para ESM top-level imports)
 try {
@@ -95,11 +96,12 @@ export const auth = betterAuth({
 			domain: !isProduction ? 'localhost' : undefined, // Permitir cookies en localhost
 		},
 	},
-	// Plugin de Admin para gestión de roles
+	// Plugin de Admin con Access Control para gestión de roles
 	plugins: [
 		admin({
 			defaultRole: 'user',
-			adminRoles: ['admin'],
+			ac,
+			roles,
 		}),
 	],
 });
