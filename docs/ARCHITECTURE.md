@@ -7,7 +7,7 @@ Este documento proporciona una visión general técnica del backend del proyecto
 - **Framework**: [NestJS](https://nestjs.com/) (Express por defecto).
 - **Lenguaje**: TypeScript.
 - **Base de Datos**: PostgreSQL gestionado a través de **Prisma ORM**.
-- **Autenticación**: [Better Auth](https://www.better-auth.com/) (integrado como middleware).
+- **Autenticación**: [Better Auth](https://www.better-auth.com/) (integrado programáticamente).
 - **Herramientas**: Biome (Linter/Formatter), Vitest (Testing), Docker.
 
 ## 🏛️ Filosofía Arquitectónica
@@ -19,25 +19,35 @@ Buscamos una **Arquitectura Hexagonal Pragmática**:
 
 ### 🔐 Integración de Autenticación
 
-Se utiliza **Better Auth** integrado de forma simplificada:
-- **Middleware Global**: Intercepta prefijos `/api/auth` y delega el manejo a `toNodeHandler(auth)`, centralizando la lógica sin saturar los controllers.
-- **AuthController de Paso**: Existe únicamente para proveer metadatos a Swagger/Scalar, permitiendo que la API esté documentada mientras que la ejecución real ocurre en la capa de middleware.
+Se utiliza **Better Auth** integrado de forma **programática**:
+
+- **API Programática**: Los controladores usan `auth.api.*` directamente (ej: `auth.api.signInEmail()`, `auth.api.listUsers()`).
+- **Utilidades Compartidas**: `toWebHeaders()`, `copyResponseHeaders()`, `handleBetterAuthError()` en `shared/infrastructure/auth/better-auth.utils.ts`.
+- **Sin Middleware de Express**: Todo el routing pasa por NestJS para documentación unificada en Swagger.
 - **Prisma Adapter**: Conectado directamente a la base de datos PostgreSQL para gestión de sesiones y usuarios.
+
+> 📖 Ver [docs/BETTER_AUTH.md](./BETTER_AUTH.md) para la guía completa de integración.
 
 ## 📁 Estructura de Carpetas
 
 ```text
 src/
 ├── app/                    # Configuración global de NestJS (Module principal, Health, etc.)
+│   └── auth/
+│       └── api/            # Controlador de autenticación (sign-in, sign-up, etc.)
 ├── contexts/               # Módulos de negocio (Contextos delimitados)
 │   ├── [context_name]/
-│   │   ├── api/            # Capa de Entrega (Controllers, Guards, Decoradores)
-│   │   ├── application/    # Capa de Aplicación (Casos de uso, DTOs)
+│   │   ├── api/            # Capa de Entrega (Controllers, Guards, Decoradores, DTOs)
+│   │   ├── application/    # Capa de Aplicación (Casos de uso)
 │   │   ├── domain/         # Capa de Dominio (Entidades, Interfaces de Repositorio)
 │   │   └── infrastructure/ # Capa de Infraestructura (Persistencia, Adaptadores externos)
 └── shared/                 # Código compartido por todos los contextos
     ├── domain/             # Clases base (BaseEntity, IRepository)
-    ├── infrastructure/     # Implementaciones compartidas (Prisma, Logger, Filtros)
+    ├── infrastructure/     # Implementaciones compartidas
+    │   ├── auth/           # Better Auth (config, utils)
+    │   ├── decorators/     # Decoradores compartidos (@RequireRole)
+    │   ├── filters/        # Filtros globales (DomainExceptionFilter)
+    │   └── guards/         # Guards compartidos (RolesGuard)
     └── exceptions/         # Excepciones base de dominio
 ```
 
@@ -96,14 +106,47 @@ export function projectToPrismaUpdate(entity: Partial<ProjectEntity>): Prisma.Pr
 ### 4. Repositorio de Infraestructura (`infrastructure/repositories/prisma-project.repository.ts`)
 Implementa el patrón `getClient(tx)` para soportar transacciones atómicas a través de múltiples repositorios.
 
+### 5. DTOs (`api/project.dto.ts`)
+Los DTOs van junto a los controladores que los usan:
+
+```typescript
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+
+export class CreateProjectDto {
+  @ApiProperty({ example: 'Mi Proyecto' })
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+}
+```
+
 ---
 
-## �️ Manejo de Errores (Centralizado)
+## 🛠️ Manejo de Errores (Centralizado)
 
 **Regla de oro**: El Dominio lanza errores de negocio (`DomainException`), la Infraestructura los traduce a HTTP.
 
-1. **Definición**: Las excepciones de dominio deben heredar de `DomainException` y son agnósticas a NestJS.
-2. **Traducción**: El `DomainExceptionFilter` (`src/shared/infrastructure/filters/domain-exception.filter.ts`) captura estas excepciones globalmente y asigna el `HttpStatus` adecuado basándose en el código interno de la excepción.
+### Tipos de Excepciones
+
+| Excepción | Uso | HTTP Status |
+|-----------|-----|-------------|
+| `DomainException` | Base para todas las excepciones de dominio | 500 |
+| `AuthException` | Errores de autenticación de dominio | 401/403/409 |
+| `NotFoundException` | Recurso no encontrado | 404 |
+| `ValidationException` | Datos inválidos | 400 |
+
+### Errores de Better Auth
+
+Para errores de la API de Better Auth, usa `handleBetterAuthError()`:
+
+```typescript
+try {
+  await auth.api.createUser({ ... });
+} catch (error) {
+  handleBetterAuthError(error); // Convierte APIError a HttpException
+}
+```
 
 ---
 
@@ -113,17 +156,27 @@ Implementa el patrón `getClient(tx)` para soportar transacciones atómicas a tr
 - **Transacciones Pragmáticas**: El uso de `tx?` opcional permite orquestar transacciones complejas en los Casos de Uso sin sobrecargar los métodos simples.
 - **Mappers Eficientes**: La utilidad `cleanPrismaData` automatiza la limpieza de datos para Prisma, eliminando cientos de líneas de código repetitivo.
 - **Desacoplamiento Real**: El Filtro de Excepciones permite que el dominio no se contamine con códigos de estado HTTP.
+- **Better Auth Programático**: Usar `auth.api.*` en lugar de middleware da control total sobre la lógica de negocio.
 
 **Cuándo no ser puristas:**
 - **CRUDs Simples**: Si un módulo es puramente de lectura o un CRUD muy básico sin lógica, se permite mayor cercanía a los tipos de Prisma si esto ahorra tiempo significativo sin comprometer la escalabilidad de las entidades núcleo.
-- **Validaciones**: Usa `Zod` o `class-validator` en los DTOs de entrada para fallar rápido en la frontera del sistema.
+- **Validaciones**: Usa `class-validator` en los DTOs de entrada para fallar rápido en la frontera del sistema.
 
 ## 🛠️ Checklist de Desarrollo
+
+### Nuevo Módulo de Negocio
 1. [ ] Definir modelo en `schema.prisma` y ejecutar migración.
 2. [ ] Crear `Entity` y `Repository Interface` en Dominio.
 3. [ ] Crear `Mapper` y `PrismaRepository` en Infraestructura.
-4. [ ] Inyectar repositorio en el módulo de NestJS usando un Token (interfaz).
-5. [ ] Crear `UseCase` e inyectar la interfaz del repositorio.
+4. [ ] Crear DTOs en `api/[nombre].dto.ts`.
+5. [ ] Inyectar repositorio en el módulo de NestJS usando un Token (interfaz).
+6. [ ] Crear `UseCase` e inyectar la interfaz del repositorio.
+
+### Nuevo Endpoint con Better Auth
+1. [ ] Importar utilidades de `@/shared/infrastructure/auth/better-auth.utils`.
+2. [ ] Usar `toWebHeaders(req.headers)` para pasar headers.
+3. [ ] Usar `handleBetterAuthError(error)` en el catch.
+4. [ ] Si es autenticación, usar `returnHeaders: true` y `copyResponseHeaders()`.
 
 ---
-*Última actualización: Diciembre 2025*
+*Última actualización: Enero 2026*
