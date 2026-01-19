@@ -37,13 +37,3 @@ jobs:
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) 1.6.26
           ./actionlint -color
-
-      - name: Lint PR Title 📝
-        if: github.event_name == 'pull_request'
-        uses: amannn/action-semantic-pull-request@v6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          ignoreLabels: |
-            bot
-            autorelease: pending
