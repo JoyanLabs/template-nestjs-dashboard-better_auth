@@ -1,8 +1,7 @@
-name: '🐳 Docker size'
+name: 🐳 Docker Size
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
@@ -10,62 +9,79 @@ permissions:
 
 jobs:
   calculate-base:
+    name: Calculate Base Image Size
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
-      image_size: ${{ steps.docker-base.outputs.image_size }}
+      image_size: ${{ steps.get-size.outputs.image_size }}
+
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout base 🛬
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.base_ref }}
-      - name: Get commit short hash
+
+      - name: Get commit hash 🔑
         id: commit
-        run: |
-          short=$(git rev-parse --short HEAD)
-          echo "short=$short" >> "$GITHUB_OUTPUT"
-      - name: 📦 Cache docker image for commit ${{ steps.commit.outputs.short }}
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache docker image 💾
+        id: cache
         uses: actions/cache@v5
         with:
-          path: base-docker-image.txt
+          path: /tmp/docker-image.tar
           key: base-docker-image-os-${{ runner.os }}-commit-${{ steps.commit.outputs.short }}
-      - name: 🐳 Calculate docker image size in ${{ github.base_ref }}
-        id: docker-base
+
+      - name: Build docker image 📊
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          if [ -f base-docker-image.txt ]; then
-            echo "Getting docker image from cache"
-            image_size=$(<base-docker-image.txt)
-          else
-            echo "Docker image not available in the cache"
-            docker build . -t service
-            image_size=$(docker images service | awk 'NR==2 {print $NF}')
-          fi
-          echo "$image_size" > base-docker-image.txt
+          docker build . -t spp-backend --target production
+          docker save spp-backend -o /tmp/docker-image.tar
+
+      - name: Load cached docker image 📦
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: docker load -i /tmp/docker-image.tar
+
+      - name: Get image size 📏
+        id: get-size
+        run: |
+          image_size=$(docker images spp-backend | awk 'NR==2 {print $NF}')
           echo "image_size=$image_size" >> "$GITHUB_OUTPUT"
+
   calculate-head:
+    name: Calculate PR Image Size
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
-      image_size: ${{ steps.docker-head.outputs.image_size }}
+      image_size: ${{ steps.calculate.outputs.image_size }}
+
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref }}
-      - name: 🐳 Calculate docker image size in ${{ github.head_ref }}
-        id: docker-head
+      - name: Checkout PR 🛬
+        uses: actions/checkout@v6
+
+      - name: Build and calculate docker image size 📊
+        id: calculate
         run: |
-          docker build . -t service
-          image_size=$(docker images service | awk 'NR==2 {print $NF}')
+          docker build . -t spp-backend --target production
+          image_size=$(docker images spp-backend | awk 'NR==2 {print $NF}')
           echo "image_size=$image_size" >> "$GITHUB_OUTPUT"
+
   write-comment:
-    runs-on: ubuntu-latest
+    name: Comment on PR
     needs: [calculate-base, calculate-head]
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: marocchino/sticky-pull-request-comment@v2
-        env:
-          BASE_DOCKER_IMAGE_SIZE: ${{needs.calculate-base.outputs.image_size}}
-          HEAD_DOCKER_IMAGE_SIZE: ${{needs.calculate-head.outputs.image_size}}
+      - name: Comment PR 💬
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          header: <docker-image-size>
+          header: docker-metrics
           message: |
             ## 🐳 Docker Metrics 🐳
 
-            * Size of the Docker Image in the base (${{ github.base_ref }}): **${{ env.BASE_DOCKER_IMAGE_SIZE }}**
-            * Size of the Docker Image in this branch (${{ github.head_ref }}): **${{ env.HEAD_DOCKER_IMAGE_SIZE }}**
+            | Metric | Value |
+            |--------|-------|
+            | Base branch | **${{ needs.calculate-base.outputs.image_size }}** |
+            | This PR | **${{ needs.calculate-head.outputs.image_size }}** |
+
+            > 💡 Smaller is better! Consider optimizing if the image size increased significantly.
