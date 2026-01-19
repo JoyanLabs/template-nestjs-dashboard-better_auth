@@ -21,11 +21,12 @@
 		"docker",
 		"better-auth"
 	],
+	"engineStrict": true,
 	"engines": {
 		"node": ">=22.x",
-		"pnpm": ">=10.19.0"
+		"pnpm": ">=10.27.0"
 	},
-	"packageManager": "pnpm@10.19.0",
+	"packageManager": "pnpm@10.27.0",
 	"main": "dist/main.js",
 	"scripts": {
 		"build": "node --run build:clean && nest build --path tsconfig.prod.json && tsc-alias -p tsconfig.prod.json",
