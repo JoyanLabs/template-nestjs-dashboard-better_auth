@@ -9,7 +9,7 @@ FROM base AS dev
 ENV NODE_ENV=development
 ENV CI=true
 
-RUN npm install -g pnpm@10.19.0
+RUN npm install -g pnpm@10.27.0
 
 COPY package.json pnpm-lock.yaml ./
 
@@ -36,7 +36,7 @@ FROM base AS build
 
 ENV CI=true
 
-RUN apk update && apk add --no-cache dumb-init=1.2.5-r3 && npm install -g pnpm@10.19.0
+RUN apk update && apk add --no-cache dumb-init=1.2.5-r3 && npm install -g pnpm@10.27.0
 
 COPY package.json pnpm-lock.yaml ./
 # Para paquetes privados de npm, descomenta las siguientes 3 líneas y comenta la línea simple:
