@@ -65,7 +65,7 @@
 		"zod": "^4.2.1"
 	},
 	"devDependencies": {
-		"@better-auth/cli": "1.4.10",
+		"@better-auth/cli": "1.4.15",
 		"@biomejs/biome": "2.3.11",
 		"@commitlint/cli": "20.3.0",
 		"@commitlint/config-conventional": "20.3.0",
