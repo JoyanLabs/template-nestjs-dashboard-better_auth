@@ -4,6 +4,7 @@ const config = {
 		'biome check --write',
 		...(process.env.SKIP_TESTS === 'true' ? [] : ['vitest related --run']),
 	],
+	'package.json': () => 'pnpm install --frozen-lockfile',
 	// Excluir pnpm-lock.yaml del lint (es muy grande y causa timeout)
 	'*.{yml,yaml}': (filenames) => {
 		const filtered = filenames.filter((f) => !f.includes('pnpm-lock.yaml'));
