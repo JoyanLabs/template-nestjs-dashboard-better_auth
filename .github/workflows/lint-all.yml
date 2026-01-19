@@ -20,6 +20,9 @@ jobs:
         with:
           dockerfile: Dockerfile
 
+      - name: Setup Node ⚙️
+        uses: ./.github/actions/setup-node
+
       - name: Lint dotenv 📄
         run: |
           curl -sSfL https://git.io/JLbXn | sh -s -- -b usr/local/bin v3.3.0
