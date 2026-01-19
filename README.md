@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://nodejs.org/docs/latest-v22.x/api/index.html"><img src="https://img.shields.io/badge/node-22.x-green.svg" alt="node"/></a>
+  <a href="https://nodejs.org/docs/latest-v24.x/api/index.html"><img src="https://img.shields.io/badge/node-24.x-green.svg" alt="node"/></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/typescript-5.x-blue.svg" alt="typescript"/></a>
-  <a href="https://pnpm.io/"><img src="https://img.shields.io/badge/pnpm-9.x-red.svg" alt="pnpm"/></a>
+  <a href="https://pnpm.io/"><img src="https://img.shields.io/badge/pnpm-10.x-orange.svg" alt="pnpm"/></a>
   <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Web_Framework-Express_⚡-black.svg" alt="express"/></a>
   <a href="https://swc.rs/"><img src="https://img.shields.io/badge/Compiler-SWC_-orange.svg" alt="swc"/></a>
   <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/Test-Vitest_-yellow.svg" alt="swc"/></a>
@@ -70,7 +70,7 @@ cp .env.example .env
 Install `pnpm` globally:
 
 ```bash
-npm install -g pnpm@10.19.0
+npm install -g pnpm@10.27.0
 ```
 
 ### Development Mode
@@ -200,6 +200,24 @@ pnpm run lint:fix
 - Authentication with Better Auth
 - Role-based access control
 - Admin endpoints
+
+---
+
+## ⚙️ Gestión de Versiones
+
+Este proyecto utiliza un control estricto de versiones para asegurar la consistencia entre el entorno local, CI y Docker mediante `engineStrict: true`.
+
+- **Node.js**: La versión LTS Krypton (24.x) está fijada en [.nvmrc](.nvmrc) y `package.json`.
+- **pnpm**: La versión está fijada en `package.json` (`packageManager`).
+
+### Cómo actualizar versiones
+
+Para migrar a una nueva versión de Node o pnpm:
+1.  **Node**: Cambia la versión en [.nvmrc](.nvmrc).
+2.  **package.json**: Actualiza `packageManager` y el campo `engines`.
+3.  **renovate.json**: Sincroniza el campo `constraints.pnpm`.
+4.  **Dockerfile**: Actualiza la imagen base (ej. `node:24-alpine`) y la instalación de `pnpm@10.27.0` en todas las etapas (`dev` y `build`).
+5.  **pnpm install**: Ejecuta pnpm install para actualizar el lockfile.
 
 ---
 
