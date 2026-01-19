@@ -20,10 +20,8 @@ jobs:
         with:
           dockerfile: Dockerfile
 
-      - name: Verify pnpm-lock.yaml Sync 🔄
-        run: |
-          npm install -g pnpm@10.19.0
-          pnpm install --frozen-lockfile
+      - name: Setup Node ⚙️
+        uses: ./.github/actions/setup-node
 
       - name: Lint dotenv 📄
         run: |
