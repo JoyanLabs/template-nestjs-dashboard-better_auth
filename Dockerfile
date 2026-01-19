@@ -11,7 +11,7 @@ ENV CI=true
 
 RUN npm install -g pnpm@10.27.0
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Para paquetes privados de npm, descomenta las siguientes 3 líneas y comenta la línea simple:
 # RUN echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ".npmrc" && \
@@ -38,7 +38,7 @@ ENV CI=true
 
 RUN apk update && apk add --no-cache dumb-init=1.2.5-r3 && npm install -g pnpm@10.27.0
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # Para paquetes privados de npm, descomenta las siguientes 3 líneas y comenta la línea simple:
 # RUN echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ".npmrc" && \
 #     pnpm install --frozen-lockfile && \
