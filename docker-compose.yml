@@ -45,6 +45,22 @@ services:
           cpus: "0.25"
           memory: "256m"
 
+  # Inngest Dev Server - para procesamiento de tareas asíncronas
+  inngest:
+    image: inngest/inngest:latest
+    container_name: app_inngest
+    ports:
+      - "8288:8288"
+    command: |
+      inngest dev
+      -u http://app:${PORT:-3001}/api/inngest
+      --port 8288
+    # depends_on:
+    #   app:
+    #     condition: service_started
+    environment:
+      - INNGEST_DEV=1
+
 # k6:
 #   image: ghcr.io/grafana/xk6-dashboard:0.7.2
 #   container_name: k6

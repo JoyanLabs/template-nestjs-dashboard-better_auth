@@ -1,19 +1,28 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import cookieParser from 'cookie-parser';
+import { serve } from 'inngest/express';
 
 import { AppModule } from '@/app/app.module.js';
 import {
 	type EnvConfig,
 	validateEnv,
 } from '@/shared/infrastructure/config/env.schema.js';
+import { inngest } from '@/shared/infrastructure/inngest-client/client.js';
+import { getInngestFunctions } from '@/shared/infrastructure/inngest-client/functions-factory.js';
 
 async function bootstrap() {
 	// NestJS usa Express body parser por defecto
 	// Better Auth handler montado directamente en Express maneja su propio body
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+		bodyParser: true,
+	});
+
+	// Configurar body parser para Inngest (payloads grandes)
+	app.useBodyParser('json', { limit: '10mb' });
 
 	const logger = new Logger('Bootstrap');
 
@@ -74,11 +83,49 @@ async function bootstrap() {
 	// Establecer prefijo global de la API ANTES de configurar Swagger
 	app.setGlobalPrefix(apiPrefix);
 
-	// Global Exception Filter for Domain
+	// Global Exception Filter for Domain and Unhandled Errors
 	const { DomainExceptionFilter } = await import(
 		'./shared/infrastructure/filters/domain-exception.filter.js'
 	);
-	app.useGlobalFilters(new DomainExceptionFilter());
+	const { GlobalExceptionFilter } = await import(
+		'./shared/infrastructure/filters/global-exception.filter.js'
+	);
+
+	// El orden importa: NestJS procesa filtros globales en orden de registro.
+	// Pero la especificidad de @Catch() tiene precedencia lógica.
+	// Registramos ambos para asegurar cobertura total.
+	app.useGlobalFilters(
+		new GlobalExceptionFilter(),
+		new DomainExceptionFilter(),
+	);
+
+	// Configuración global de validación (class-validator)
+	app.useGlobalPipes(
+		new ValidationPipe({
+			transform: true, // Transforma el payload al tipo del DTO
+			whitelist: true, // Elimina propiedades no decoradas en el DTO
+			forbidNonWhitelisted: true, // Lanza error si hay propiedades extra
+		}),
+	);
+
+	// ============================================
+	// Inngest Configuration
+	// ============================================
+	// Configuración básica de Inngest - las dependencias se inyectan en el factory
+	const inngestFunctions = getInngestFunctions({
+		logger: new Logger('Inngest'),
+	});
+
+	app.use(
+		'/api/inngest',
+		serve({
+			client: inngest,
+			functions: inngestFunctions,
+		}),
+	);
+
+	logger.log(`🔄 Inngest: ${inngestFunctions.length} function(s) registered`);
+	logger.log(`📡 Inngest endpoint: http://localhost:${port}/api/inngest`);
 
 	// Configuración de Swagger/OpenAPI (después del prefijo global para incluir /api en las rutas)
 	const config = new DocumentBuilder()

@@ -12,5 +12,9 @@ k6-results
 pnpm-debug.log*
 .DS_Store
 
+# AI assistants
+.claude/
+.opencode/
+
 !.env.example
 /generated/prisma

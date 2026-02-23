@@ -25,9 +25,28 @@ export const envSchema = z.object({
 		.string()
 		.default('http://localhost:3000,http://127.0.0.1:3000'),
 
-	// Inngest (Próxima fase)
+	// Inngest
 	INNGEST_EVENT_KEY: z.string().optional(),
 	INNGEST_SIGNING_KEY: z.string().optional(),
+	INNGEST_DEV: z.string().optional().default('1'),
+	INNGEST_BASE_URL: z.string().url().optional(),
+
+	// Mailtrap (Email service)
+	MAILTRAP_API_TOKEN: z.string().optional(),
+	MAILTRAP_SENDER_EMAIL: z.string().email().optional(),
+	MAILTRAP_SENDER_NAME: z.string().optional(),
+	MAILTRAP_SANDBOX: z.string().optional(),
+	MAILTRAP_INBOX_ID: z.string().optional(),
+
+	// Cloudflare R2 (Storage) - Opcionales para desarrollo
+	R2_ACCOUNT_ID: z.string().optional(),
+	R2_ACCESS_KEY_ID: z.string().optional(),
+	R2_SECRET_ACCESS_KEY: z.string().optional(),
+	R2_BUCKET_NAME: z.string().optional(),
+	R2_PUBLIC_URL: z.string().url().optional(),
+
+	// Frontend URL (para redirects)
+	FRONTEND_URL: z.string().url().default('http://localhost:3000'),
 });
 
 /**

@@ -41,13 +41,13 @@ export class CreateUserDto {
 
 	@ApiPropertyOptional({
 		description: 'Rol del usuario',
-		enum: ['user', 'admin'],
+		enum: ['user', 'admin', 'moderator'],
 		default: 'user',
 		example: 'user',
 	})
 	@IsOptional()
-	@IsEnum(['user', 'admin'])
-	role?: 'user' | 'admin';
+	@IsEnum(['user', 'admin', 'moderator'])
+	role?: 'user' | 'admin' | 'moderator';
 }
 
 /**
@@ -77,12 +77,12 @@ export class BanUserDto {
 export class UpdateRoleDto {
 	@ApiProperty({
 		description: 'Nuevo rol para el usuario',
-		enum: ['user', 'admin'],
+		enum: ['user', 'admin', 'moderator'],
 		example: 'admin',
 	})
-	@IsEnum(['user', 'admin'])
+	@IsEnum(['user', 'admin', 'moderator'])
 	@IsNotEmpty()
-	role!: 'user' | 'admin';
+	role!: 'user' | 'admin' | 'moderator';
 }
 
 /**

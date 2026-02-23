@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import {
-	ApiBody,
+	Body,
+	Controller,
+	Get,
+	Param,
+	Post,
+	Query,
+	Req,
+	Res,
+} from '@nestjs/common';
+import {
 	ApiCookieAuth,
 	ApiOperation,
 	ApiResponse,
@@ -13,18 +21,16 @@ import {
 	handleBetterAuthError,
 	toWebHeaders,
 } from '@/shared/infrastructure/auth/better-auth.utils.js';
+import { validateEnv } from '@/shared/infrastructure/config/env.schema.js';
+import {
+	AuthResponseDto,
+	ForgetPasswordDto,
+	ResetPasswordDto,
+	SignInDto,
+	SignUpDto,
+} from './auth.dto.js';
 
-// DTOs para validación y documentación
-class SignUpDto {
-	email!: string;
-	password!: string;
-	name!: string;
-}
-
-class SignInDto {
-	email!: string;
-	password!: string;
-}
+const env = validateEnv(process.env);
 
 /**
  * Controlador de autenticación.
@@ -39,22 +45,11 @@ export class AuthController {
 		summary: 'Registrar usuario con email',
 		description: 'Crea una nueva cuenta de usuario usando email y contraseña',
 	})
-	@ApiBody({
-		schema: {
-			type: 'object',
-			required: ['email', 'password', 'name'],
-			properties: {
-				email: { type: 'string', format: 'email', example: 'user@example.com' },
-				password: {
-					type: 'string',
-					minLength: 8,
-					example: 'SecurePassword123!',
-				},
-				name: { type: 'string', example: 'John Doe' },
-			},
-		},
+	@ApiResponse({
+		status: 200,
+		description: 'Usuario registrado exitosamente',
+		type: AuthResponseDto,
 	})
-	@ApiResponse({ status: 200, description: 'Usuario registrado exitosamente' })
 	@ApiResponse({ status: 400, description: 'Datos inválidos' })
 	@ApiResponse({ status: 409, description: 'El email ya está registrado' })
 	async signUp(
@@ -89,17 +84,11 @@ export class AuthController {
 		summary: 'Iniciar sesión con email',
 		description: 'Autentica un usuario usando email y contraseña',
 	})
-	@ApiBody({
-		schema: {
-			type: 'object',
-			required: ['email', 'password'],
-			properties: {
-				email: { type: 'string', format: 'email', example: 'user@example.com' },
-				password: { type: 'string', example: 'SecurePassword123!' },
-			},
-		},
+	@ApiResponse({
+		status: 200,
+		description: 'Sesión iniciada exitosamente',
+		type: AuthResponseDto,
 	})
-	@ApiResponse({ status: 200, description: 'Sesión iniciada exitosamente' })
 	@ApiResponse({ status: 401, description: 'Credenciales inválidas' })
 	async signIn(
 		@Req() req: Request,
@@ -136,28 +125,7 @@ export class AuthController {
 	@ApiResponse({
 		status: 200,
 		description: 'Sesión del usuario',
-		schema: {
-			type: 'object',
-			properties: {
-				session: {
-					type: 'object',
-					properties: {
-						id: { type: 'string' },
-						userId: { type: 'string' },
-						expiresAt: { type: 'string', format: 'date-time' },
-					},
-				},
-				user: {
-					type: 'object',
-					properties: {
-						id: { type: 'string' },
-						email: { type: 'string' },
-						name: { type: 'string' },
-						role: { type: 'string', enum: ['user', 'admin'] },
-					},
-				},
-			},
-		},
+		type: AuthResponseDto,
 	})
 	@ApiResponse({ status: 401, description: 'No autenticado' })
 	async getSession(@Req() req: Request, @Res() res: Response) {
@@ -198,6 +166,102 @@ export class AuthController {
 			}
 
 			return res.status(200).json({ success: true });
+		} catch (error) {
+			// Manejar caso donde la sesión ya fue eliminada (doble logout, race condition)
+			if (
+				error &&
+				typeof error === 'object' &&
+				'code' in error &&
+				error.code === 'P2025'
+			) {
+				// Sesión no encontrada - igual consideramos el logout exitoso
+				// Limpiar la cookie del cliente de todos modos
+				res.clearCookie('session_token', {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === 'production',
+					sameSite: 'lax',
+					path: '/',
+				});
+				return res
+					.status(200)
+					.json({ success: true, message: 'Sesión ya cerrada' });
+			}
+			handleBetterAuthError(error);
+		}
+	}
+
+	@Post('request-password-reset')
+	@ApiOperation({
+		summary: 'Solicitar recuperación de contraseña',
+		description: 'Envía un correo con el token para resetear la contraseña',
+	})
+	@ApiResponse({ status: 200, description: 'Correo enviado exitosamente' })
+	async forgetPassword(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Body() body: ForgetPasswordDto,
+	) {
+		try {
+			const result = await auth.api.requestPasswordReset({
+				headers: toWebHeaders(req.headers),
+				body: {
+					email: body.email,
+					redirectTo: body.redirectTo,
+				},
+			});
+
+			return res.status(200).json(result);
+		} catch (error) {
+			handleBetterAuthError(error);
+		}
+	}
+
+	@Get('reset-password/:token')
+	@ApiOperation({
+		summary: 'Callback de reset password',
+		description:
+			'Valida el token del email y redirige al frontend con el token',
+	})
+	@ApiResponse({ status: 302, description: 'Redirige al frontend' })
+	async resetPasswordCallback(
+		@Req() _req: Request,
+		@Res() res: Response,
+		@Param('token') token: string,
+		@Query('callbackURL') callbackURL: string,
+	) {
+		try {
+			// Redirigir al frontend con el token como query param
+			const redirectUrl = `${env.FRONTEND_URL}${callbackURL}?token=${token}`;
+			return res.redirect(redirectUrl);
+		} catch (error) {
+			handleBetterAuthError(error);
+		}
+	}
+
+	@Post('reset-password')
+	@ApiOperation({
+		summary: 'Resetear contraseña',
+		description: 'Cambia la contraseña del usuario usando un token válido',
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'Contraseña actualizada exitosamente',
+	})
+	async resetPassword(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Body() body: ResetPasswordDto,
+	) {
+		try {
+			const result = await auth.api.resetPassword({
+				headers: toWebHeaders(req.headers),
+				body: {
+					token: body.token,
+					newPassword: body.newPassword,
+				},
+			});
+
+			return res.status(200).json(result);
 		} catch (error) {
 			handleBetterAuthError(error);
 		}
