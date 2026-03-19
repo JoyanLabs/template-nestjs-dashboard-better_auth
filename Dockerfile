@@ -22,8 +22,8 @@ RUN pnpm install --frozen-lockfile
 COPY prisma prisma
 COPY prisma.config.ts .
 COPY tsconfig*.json .
-COPY .swcrc .
 COPY nest-cli.json .
+COPY scripts scripts
 COPY src src
 
 # Generar el cliente de Prisma (solo tipos, no necesita DATABASE_URL)
@@ -48,8 +48,8 @@ RUN pnpm install --frozen-lockfile
 COPY prisma prisma
 COPY prisma.config.ts .
 COPY tsconfig*.json .
-COPY .swcrc .
 COPY nest-cli.json .
+COPY scripts scripts
 COPY src src
 
 # Generar el cliente de Prisma antes del build (solo tipos, no necesita DATABASE_URL)
