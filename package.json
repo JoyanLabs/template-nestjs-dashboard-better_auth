@@ -29,9 +29,9 @@
 	"packageManager": "pnpm@10.27.0",
 	"main": "dist/main.js",
 	"scripts": {
-		"build": "node --run build:clean && nest build --path tsconfig.prod.json && tsc-alias -p tsconfig.prod.json",
+		"build": "node scripts/generate-swcrc.mjs && node --run build:clean && nest build --path tsconfig.prod.json && tsc-alias -p tsconfig.prod.json",
 		"start": "node dist/main.js",
-		"dev": "nest start --watch --debug=0.0.0.0:9229",
+		"dev": "node scripts/generate-swcrc.mjs && nest start --watch --debug=0.0.0.0:9229",
 		"test": "rimraf coverage .nyc_output && concurrently 'node --run test:unit' 'node --run test:e2e' && node --run calculate-global-test-coverage",
 		"test:unit": "vitest run --coverage --config vitest.config.unit.ts",
 		"test:e2e": "vitest run --coverage --config ./vitest.config.e2e.ts",

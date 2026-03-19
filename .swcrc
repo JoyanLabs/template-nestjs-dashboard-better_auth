@@ -13,13 +13,23 @@
 		},
 		"target": "es2022",
 		"keepClassNames": true,
-		"baseUrl": ".",
+		"baseUrl": "/home/joshrm/Documentos/proyectos/peruintercorp/conasin/template-nestjs-dashboard-better_auth",
 		"paths": {
-			"@/src/*": ["src/*"],
-			"@/app/*": ["src/app/*"],
-			"@/contexts/*": ["src/contexts/*"],
-			"@/shared/*": ["src/shared/*"],
-			"@/tests/*": ["tests/*"]
+			"@/src/*": [
+				"src/*"
+			],
+			"@/app/*": [
+				"src/app/*"
+			],
+			"@/contexts/*": [
+				"src/contexts/*"
+			],
+			"@/shared/*": [
+				"src/shared/*"
+			],
+			"@/tests/*": [
+				"tests/*"
+			]
 		}
 	},
 	"module": {
