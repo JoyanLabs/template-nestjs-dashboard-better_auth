@@ -29,6 +29,7 @@ Usa estos skills para patrones detallados bajo demanda:
 | `better-auth` | API programática, roles, permisos | [SKILL.md](skills/better-auth/SKILL.md) |
 | `inngest` | Funciones asíncronas, steps, eventos | [SKILL.md](skills/inngest/SKILL.md) |
 | `prisma` | Migraciones, mappers, transacciones | [SKILL.md](skills/prisma/SKILL.md) |
+| `email-mailtrap` | Envío de emails, templates, Mailtrap | [SKILL.md](skills/email-mailtrap/SKILL.md) |
 | `auth-guards` | Guards y permisos avanzados | [SKILL.md](skills/auth-guards/SKILL.md) |
 | `prisma-repository` | Patrón repositorio con interfaces | [SKILL.md](skills/prisma-repository/SKILL.md) |
 | `vitest-testing` | Patrones de testing con Vitest | [SKILL.md](skills/vitest-testing/SKILL.md) |
@@ -40,6 +41,7 @@ Usa estos skills para patrones detallados bajo demanda:
 |-------|-------------|-----|
 | `skill-creator` | Crear nuevos AI agent skills | [SKILL.md](skills/skill-creator/SKILL.md) |
 | `skill-sync` | Sincronizar metadata a AGENTS.md | [SKILL.md](skills/skill-sync/SKILL.md) |
+| `skill-auditor` | Auditar y revisar calidad de skills | [SKILL.md](skills/skill-auditor/SKILL.md) |
 
 ### Auto-invoke Skills
 
@@ -54,6 +56,7 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Creando nuevos skills | `skill-creator` |
 | Creando schemas Zod | `zod-4` |
 | Después de crear/modificar un skill | `skill-sync` |
+| Enviando emails o implementando notificaciones | `email-mailtrap` |
 | Escribiendo tipos/interfaces TypeScript | `typescript` |
 | Preguntas generales sobre el template | `template-backend` |
 | Regenerar tablas Auto-invoke de AGENTS.md | `skill-sync` |
@@ -62,6 +65,8 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Protegiendo endpoints con guards avanzados | `auth-guards` |
 | Implementando repositorios con Prisma | `prisma-repository` |
 | Escribiendo tests con Vitest | `vitest-testing` |
+| Auditar o revisar skills existentes | `skill-auditor` |
+| Validar skills contra código real | `skill-auditor` |
 
 ---
 
