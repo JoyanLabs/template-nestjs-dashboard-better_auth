@@ -23,7 +23,7 @@ COPY prisma prisma
 COPY prisma.config.ts .
 COPY tsconfig*.json .
 COPY nest-cli.json .
-COPY scripts scripts
+COPY .swcrc .
 COPY src src
 
 # Generar el cliente de Prisma (solo tipos, no necesita DATABASE_URL)
@@ -49,14 +49,14 @@ COPY prisma prisma
 COPY prisma.config.ts .
 COPY tsconfig*.json .
 COPY nest-cli.json .
-COPY scripts scripts
+COPY .swcrc .
 COPY src src
 
 # Generar el cliente de Prisma antes del build (solo tipos, no necesita DATABASE_URL)
 RUN npx prisma generate
 
 RUN node --run build && \
-    pnpm prune --prod
+    pnpm prune --prod --ignore-scripts
 
 FROM base AS production
 

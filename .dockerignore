@@ -4,8 +4,9 @@
 !/pnpm-workspace.yaml
 !/tsconfig.prod.json
 !/tsconfig.json
+!/.swcrc
 !/nest-cli.json
 !/prisma.config.ts
 !/prisma
-!/scripts
 !/src
+!/docker-entrypoint.sh
